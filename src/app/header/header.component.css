@@ -1,0 +1,41 @@
+
+.header-container {
+  padding: 10px 16px 10px 16px;
+  display: flex;
+  background-color: rgb(245, 240, 240);
+  align-items: center;
+  justify-content: space-between;
+}
+.dp {
+  /* position: relative; */
+  overflow: hidden;
+  border-radius: 50%;
+  width:43px;
+  height:40px;
+}
+.icons-group {
+  width: 45%;
+  display: flex;
+}
+
+.arrange {
+  padding: 8px;
+}
+
+.searchBarContainer {
+  display: flex;
+  padding: 8px;
+  right: 0;
+}
+.searchBar {
+  width: 93%;
+  border-radius: 10px;
+  height: 35px;
+  border: none;
+  background-color:  rgb(245, 240, 240);
+}
+.searchIcon {
+  width:7%;
+  padding: 6px;
+  align-items: flex-end;
+}
