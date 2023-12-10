@@ -1,0 +1,11 @@
+<a href="#" class="chat-container" *ngFor="let chat of chats">
+  <div class="msgDesc-container">
+    <div class="dp">
+      <img src="{{ chat.imagePath }}">
+    </div>
+    <div class="chat-desc">
+      <div>{{ chat.name }}</div>
+      <div>{{ chat.lastMsg }}</div>
+    </div>
+  </div>
+</a>

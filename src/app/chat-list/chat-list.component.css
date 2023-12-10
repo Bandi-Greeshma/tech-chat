@@ -1,0 +1,24 @@
+/* .chat-container {
+  border: 0.1px solid rgb(189, 184, 184);
+  height: 40px;
+} */
+.msgDesc-container {
+  height: 40px;
+  display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 0.1px solid rgb(189, 184, 184);
+}
+.dp {
+  width: 15%;
+  overflow: hidden;
+  border-radius: 50%;
+  width:43px;
+  height:40px;
+  margin-right: 15px;
+  margin-left: 15px;
+  border-bottom: none;
+}
+.chat-desc {
+  width:85%;
+}
