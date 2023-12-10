@@ -1,6 +1,15 @@
 export const environment = {
   production: false,
-  mongoSrv: "mongodb+srv://bandigreeshma1:X9A9smXen8oO1QBw@cluster0.w9krmtu.mongodb.net/tech-chat",
-  mongoUser: "bandigreeshma1",
-  mongoPwd: "X9A9smXen8oO1QBw"
-}
+  protocol: 'http',
+  host: 'localhost:3000',
+  api: {
+    auth: {
+      register: '/api/v1/auth/register',
+      login: '/api/v1/auth/login',
+      fetch: '/api/v1/auth/fetch',
+    },
+    chat: {
+      add: '/api/v1/chat/add',
+    },
+  },
+};

@@ -1,3 +1,7 @@
-module.exports = (socket) => {
-  socket.on("SEND_MESSAGE", () => {});
+const { Socket } = require("socket.io");
+
+const messageListener = (socket) => {
+  socket.on();
 };
+
+module.exports = { messageListener };

@@ -1,16 +1,16 @@
 const Mongoose = require("mongoose");
-const { Schema, Types, model } = Mongoose;
+const { Schema, model } = Mongoose;
 
 const userSchema = new Schema({
-  name: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
   email: { type: String, required: true },
   password: { type: String, require: true },
   dp: { type: String, default: "" },
-  contacts: {
+  chats: {
     type: [
       {
-        type: Types.ObjectId,
-        ref: "User",
+        type: Schema.Types.ObjectId,
+        ref: "Chat",
       },
     ],
     default: [],

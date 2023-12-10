@@ -7,10 +7,11 @@ const {
   requestReset,
   reset,
 } = require("../controllers/auth.controller");
+const { checkAuth } = require("../middlewares/auth.middleware");
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/fetch", fetchUser);
+router.get("/fetch", checkAuth, fetchUser);
 router.post("/forgot/password", requestReset);
 router.post("/reset/password", reset);
 
