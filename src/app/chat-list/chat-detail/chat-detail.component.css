@@ -1,0 +1,36 @@
+.right-container {
+  background-image: url("../../../assets/images/bg_whatsapp.jpg");
+  height:100vh;
+  background-size: contain;
+  background-blend-mode: lighten;
+}
+.header-container{
+  border-left: 0.1px solid rgb(189, 184, 184);
+  display: flex;
+  background-color: rgb(245, 240, 240);
+  height: 40px;
+  padding: 10px 16px 10px 16px;
+  justify-content: space-between;
+}
+.dp {
+  border-radius: 50%;
+  position: relative;
+  width:43px;
+  height:100%;
+  overflow: hidden;
+}
+.display_pic {
+  width: 60px;
+  height:60px
+}
+.contact-info {
+  width: 60%
+}
+.icon-button__container {
+  display: flex;
+  align-items: center;
+}
+.arrange {
+  padding: 8px;
+}
+
