@@ -10,7 +10,7 @@ const register = async (req, res, next) => {
   try {
     if ((!name, !email, !password)) throw { type: "incompleteData" };
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email, name });
     if (existingUser) throw { type: "existingUser" };
 
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -30,17 +30,29 @@ const register = async (req, res, next) => {
     sendErrorResponse(error, next);
   }
 };
+
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   const socketId = req.get("Socket");
 
   try {
     if ((!email, !password)) throw { type: "incompleteData" };
+    if (!socketId) throw { type: "missingSocket" };
 
-    const user = await User.findOne({ email })
-      .populate("contacts", "_id name email dp")
-      .exec();
+    const user = await User.findOne({ email });
     if (!user) throw { type: "invalidData" };
+    user.populate({
+      path: "chats",
+      model: "Chat",
+      select: "_id type users latestMsg",
+      populate: [
+        {
+          path: "users",
+          select: "_id name email dp",
+          match: { _id: { $ne: user._id } },
+        },
+      ],
+    });
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw { type: "invalidData" };
@@ -56,10 +68,16 @@ const login = async (req, res, next) => {
     });
 
     const responseObj = {
-      id: user._id.toString(),
+      _id: user._id.toString(),
       name: user.name,
       email: user.email,
-      contacts: user.contacts,
+      dp: user.dp,
+      chats: user.chats.map((chat) =>
+        chat.toObject({
+          flattenObjectIds: true,
+          flattenMaps: true,
+        })
+      ),
     };
 
     res.setHeader("Authorize", `bearer ${token}`);
@@ -68,8 +86,41 @@ const login = async (req, res, next) => {
     sendErrorResponse(error, next);
   }
 };
-const fetchUser = (req, res, next) => {};
+
+const fetchUser = async (req, res, next) => {
+  try {
+    const { sender } = req;
+
+    await sender.populate({
+      path: "chats",
+      model: "Chat",
+      select: "_id type users latestMsg",
+      populate: [
+        {
+          path: "users",
+          select: "_id name email dp",
+          match: { _id: { $ne: sender._id } },
+        },
+      ],
+    });
+
+    res
+      .status(200)
+      .json({
+        _id: sender._id.toString(),
+        name: sender.name,
+        email: sender.email,
+        dp: sender.dp,
+        chats: sender.chats,
+      })
+      .end();
+  } catch (error) {
+    sendErrorResponse(error, next);
+  }
+};
+
 const requestReset = (req, res, next) => {};
+
 const reset = (req, res, next) => {};
 
 module.exports = { register, login, fetchUser, requestReset, reset };
