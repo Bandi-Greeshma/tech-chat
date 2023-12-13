@@ -7,7 +7,7 @@ const connect = (cb) => {
       console.log("DB connected");
       cb();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log("db connection failed"));
 };
 
 module.exports = connect;

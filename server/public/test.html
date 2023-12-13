@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: "sdas8438@gmail.com",
+          password: "Sujay@1998",
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((body) => {
+          const socket = io("http://localhost:3000");
+          socket.on("confirm", (response) => {
+            console.log(response);
+          });
+          socket.on("connect_error", (err) => {
+            console.log(err);
+          });
+        });
+    </script>
+  </body>
+</html>

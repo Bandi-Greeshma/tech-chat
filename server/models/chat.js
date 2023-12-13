@@ -2,7 +2,7 @@ const Mongoose = require("mongoose");
 const { Schema, model } = Mongoose;
 
 const chatSchema = new Schema({
-  type: { type: String, required: true },
+  type: { type: String, required: true, enum: ["single", "group"] },
   users: {
     type: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     default: [],

@@ -5,14 +5,13 @@ const {
   login,
   fetchUser,
   requestReset,
-  reset,
+  resetPassword,
 } = require("../controllers/auth.controller");
-const { checkAuth } = require("../middlewares/auth.middleware");
+const { protectRoute } = require("../middlewares/auth.middleware");
 
 router.post("/register", register);
-router.post("/login", login);
-router.get("/fetch", checkAuth, fetchUser);
+router.route("/login").post(login).get(protectRoute, fetchUser);
 router.post("/forgot/password", requestReset);
-router.post("/reset/password", reset);
+router.post("/reset/password", resetPassword);
 
 module.exports = router;

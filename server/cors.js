@@ -2,8 +2,8 @@ const cors = require("cors");
 
 const options = {
   origin: ["http://localhost:4200"],
-  allowedHeaders: ["Authorize", "Socket"],
-  exposedHeaders: ["Authorize"],
+  allowedHeaders: ["authorization", "Socket"],
+  exposedHeaders: ["authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEADERS"],
 };
 

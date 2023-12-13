@@ -1,30 +1,38 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 
 const User = require("../models/user");
-const { sendErrorResponse } = require("../utils/error.handler");
+const { handleCatch, handleCatchSocket } = require("../utils/catch.handler");
+const { ServerError } = require("../utils/error.handler");
 
-const checkAuth = async (req, res, next) => {
-  try {
-    const bearer = req.get("Authorize");
-    const token = bearer.split(" ")[1];
+const protectRoute = handleCatch(async (req, res, next) => {
+  const bearer = req.cookies["authorization"];
+  const data = await verifyToken(bearer);
+  req.sender = data;
+  next();
+});
 
-    const decoded = jwt.verify(token, process.env.JWT_KEY);
-    if (!decoded) throw { type: "malformedToken" };
+const protectSocket = handleCatchSocket(async (socket, next) => {
+  const { authorization } = socket.handshake.cookies;
+  const user = await verifyToken(authorization);
+  socket.data.user = user;
+  next();
+});
 
-    const { id } = decoded;
+const verifyToken = async (bearer) => {
+  const token = bearer.split(" ")[1];
 
-    const user = await User.findById(id);
-    if (!user) throw { type: "invalidUser" };
+  const decoded = jwt.verify(token, process.env.JWT_KEY);
+  if (!decoded) throw ServerError.getDefinedError("malformedToken");
 
-    const match = await bcrypt.compare(token, user.token);
-    if (!match) throw { type: "malformedToken" };
+  const { id, iat } = decoded;
 
-    req.sender = user;
-    next();
-  } catch (error) {
-    sendErrorResponse(error);
-  }
+  const user = await User.findById(id);
+  if (!user) throw ServerError.getDefinedError("invalidUser");
+
+  if (!user.verifyTokenDate(iat))
+    throw ServerError.getDefinedError("expiredToken");
+
+  return user;
 };
 
-module.exports = { checkAuth };
+module.exports = { protectRoute, verifyToken, protectSocket };
