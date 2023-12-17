@@ -29,8 +29,7 @@ const register = handleCatch(async (req, res) => {
 
   res
     .status(200)
-    .json({ success: true, message: "User created successfully" })
-    .end();
+    .json({ status: "success", message: "User created successfully" });
 });
 
 const login = handleCatch(async (req, res) => {
@@ -43,22 +42,25 @@ const login = handleCatch(async (req, res) => {
   if (!user) throw ServerError.getDefinedError("invalidData");
 
   const match = await user.verifyPassword(password);
-  console.log(user.verifyPassword);
   if (!match) throw ServerError.getDefinedError("invalidData");
 
   const token = await signToken(
     { id: user._id.toString() },
     process.env.JWT_KEY,
     {
-      expiresIn: "1h",
+      expiresIn: process.env.JWT_AGE,
     }
   );
 
   const responseObj = {
-    _id: user._id.toString(),
-    username: user.username,
-    email: user.email,
-    dp: user.dp,
+    status: "success",
+    data: {
+      _id: user._id.toString(),
+      username: user.username,
+      email: user.email,
+      dp: user.dp,
+      status: user.status,
+    },
   };
 
   res.cookie("authorization", `Bearer ${token}`, {
@@ -66,22 +68,8 @@ const login = handleCatch(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "prod",
   });
-  res.status(200).json(responseObj).end();
+  res.status(200).json(responseObj);
 });
-
-const fetchUser = (req, res, next) => {
-  const { sender } = req;
-
-  res
-    .status(200)
-    .json({
-      _id: sender._id.toString(),
-      username: sender.username,
-      email: sender.email,
-      dp: sender.dp,
-    })
-    .end();
-};
 
 const requestReset = handleCatch(async (req, res) => {
   const { username } = req.body;
@@ -128,4 +116,4 @@ const resetPassword = handleCatch(async (req, res) => {
   res.status(200).json(user);
 });
 
-module.exports = { register, login, fetchUser, requestReset, resetPassword };
+module.exports = { register, login, requestReset, resetPassword };

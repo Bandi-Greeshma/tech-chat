@@ -21,6 +21,7 @@ app.use(corsMiddleware);
 
 // route imports
 const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
 
 // error handler import
 const { ServerError } = require("./utils/error.handler");
@@ -28,15 +29,16 @@ const { ServerError } = require("./utils/error.handler");
 // registering routes
 app.use(express.static("./public"));
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes);
 app.all("*", (req, res, next) =>
   next(ServerError.getDefinedError("invalidPath"))
 );
 
 // error handler middleware
 app.use((err, req, res, next) => {
+  console.log(err.stack);
   res.status(err.code).json({
     type: err.type,
-    stack: err.stack,
     message: err.message,
   });
 });

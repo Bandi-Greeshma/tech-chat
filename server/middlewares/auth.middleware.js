@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { handleCatch, handleCatchSocket } = require("../utils/catch.handler");
 const { ServerError } = require("../utils/error.handler");
 
-const protectRoute = handleCatch(async (req, res, next) => {
+const protectRoute = handleCatch(async (req, _, next) => {
   const bearer = req.cookies["authorization"];
   const data = await verifyToken(bearer);
   req.sender = data;
@@ -12,7 +12,7 @@ const protectRoute = handleCatch(async (req, res, next) => {
 });
 
 const protectSocket = handleCatchSocket(async (socket, next) => {
-  const { authorization } = socket.handshake.cookies;
+  const { authorization } = socket.request.cookies;
   const user = await verifyToken(authorization);
   socket.data.user = user;
   next();

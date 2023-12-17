@@ -1,5 +1,5 @@
-const Mongoose = require("mongoose");
-const { Schema, model } = Mongoose;
+const mongoose = require("mongoose");
+const { Schema, model } = mongoose;
 const bcrypt = require("bcrypt");
 
 const userSchema = new Schema({
@@ -17,19 +17,19 @@ const userSchema = new Schema({
     match: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}:;<>,.?~\\-]).{8,20}$/,
   },
   dp: { type: String, default: "" },
-  chats: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Chat",
-      },
-    ],
-    default: [],
-  },
+  status: { type: String, enum: ["online", "offline"], default: "offline" },
+  socket: { type: String, default: "" },
   token: String,
   tokenExpire: Date,
-  createdAt: { type: Date, default: Date.now() },
   passwordModifiedAt: { type: Date, default: Date.now() },
+});
+
+userSchema.pre(/^find/g, (next) => {
+  this.populate({
+    path: "contacts",
+    select: "_id username email dp status",
+  });
+  next();
 });
 
 userSchema.pre("save", async function (next) {
@@ -50,6 +50,11 @@ userSchema.methods.verifyTokenDate = function (tokenDate) {
 
 userSchema.methods.verifyResetToken = function (candidateToken) {
   return bcrypt.compare(candidateToken, this.token);
+};
+
+userSchema.methods.updateStatus = function (status) {
+  this.status = status === "online" ? status : "offline";
+  return this.save();
 };
 
 const User = model("User", userSchema);

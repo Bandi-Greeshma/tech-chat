@@ -1,5 +1,6 @@
 const errorMap = {
   invalidPath: { code: 404, message: "Resource not found" },
+  notAuthorized: { code: 400, message: "Authorization token is missing" },
   incompleteData: {
     code: 500,
     message: "Data sent was not enough for this request",

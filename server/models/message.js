@@ -8,7 +8,7 @@ const messageSchema = new Schema({
   type: { type: String, required: true, enum: ["reply", "statement"] },
   replyTo: { type: Schema.Types.ObjectId, default: "", ref: "Message" },
   text: { type: String, required: true },
-  timestamp: { type: Date, default: new Date() },
+  timestamp: { type: Date, default: Date.now() },
 });
 
 messageSchema.pre("save", (next) => {
