@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        height: 85%;
+        width: 90%;
+        padding: 20px;
+        background-color: grey;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        height: 15%;
+        background-color: orange;
+        margin-bottom: 15px;
+      }
+
+      .content {
+        flex-grow: 1;
+        background-color: red;
+      }
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header"></div>
+      <div class="content">
+        <form id="image-form">
+          <label for="image">Upload your image</label>
+          <input type="file" accept="jpg" name="photo" id="image" />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      fetch("http://localhost:3000/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: "admin2@gmail.com",
+          password: "Qwerty@1",
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) return response.json();
+          else throw response.json();
+        })
+        .then((body) => {
+          const socket = io("http://localhost:3000");
+          socket.on("confirm", (response) => {
+            console.log(response);
+          });
+          socket.on("connect_error", (err) => {
+            console.log(err);
+          });
+        })
+        .catch((err) => {
+          err.then((error) => console.log(error));
+        });
+
+      const form = document.getElementById("image-form");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+          const data = new FormData();
+          data.append("photo", document.getElementById("image").files[0]);
+          const response = await fetch("http://localhost:3000/update/image", {
+            method: "POST",
+            body: data,
+          });
+          const json = await response.json();
+          console.log(json);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    </script>
+  </body>
+</html>

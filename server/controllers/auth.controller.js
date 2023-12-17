@@ -1,126 +1,119 @@
-const bcrypt = require("bcrypt");
+const { promisify } = require("node:util");
+const { randomBytes, createHash } = require("node:crypto");
+
 const jwt = require("jsonwebtoken");
 
+const signToken = promisify(jwt.sign);
+
 const User = require("../models/user");
-const { sendErrorResponse } = require("../utils/error.handler");
+const { handleCatch } = require("../utils/catch.handler");
+const { ServerError } = require("../utils/error.handler");
+const { sendmail } = require("../mailer");
 
-const register = async (req, res, next) => {
-  const { name, email, password } = req.body;
+const register = handleCatch(async (req, res) => {
+  const { username, email, password } = req.body;
 
-  try {
-    if ((!name, !email, !password)) throw { type: "incompleteData" };
+  if ((!username, !email, !password))
+    throw ServerError.getDefinedError("incompleteData");
 
-    const existingUser = await User.findOne({ email, name });
-    if (existingUser) throw { type: "existingUser" };
+  const existingUser = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+  if (existingUser) throw ServerError.getDefinedError("existingUser");
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+  await new User({
+    username,
+    email,
+    password,
+  }).save();
 
-    const newUser = new User({
-      name,
-      email,
-      password: hashedPassword,
-    });
+  res
+    .status(200)
+    .json({ status: "success", message: "User created successfully" });
+});
 
-    await newUser.save();
-    res
-      .status(200)
-      .json({ success: true, message: "User created successfully" })
-      .end();
-  } catch (error) {
-    sendErrorResponse(error, next);
-  }
-};
+const login = handleCatch(async (req, res) => {
+  const { username, password } = req.body;
 
-const login = async (req, res, next) => {
-  const { email, password } = req.body;
-  const socketId = req.get("Socket");
+  if ((!username, !password))
+    throw ServerError.getDefinedError("incompleteData");
 
-  try {
-    if ((!email, !password)) throw { type: "incompleteData" };
-    if (!socketId) throw { type: "missingSocket" };
+  const user = await User.findOne({ $or: [{ username }, { email: username }] });
+  if (!user) throw ServerError.getDefinedError("invalidData");
 
-    const user = await User.findOne({ email });
-    if (!user) throw { type: "invalidData" };
-    user.populate({
-      path: "chats",
-      model: "Chat",
-      select: "_id type users latestMsg",
-      populate: [
-        {
-          path: "users",
-          select: "_id name email dp",
-          match: { _id: { $ne: user._id } },
-        },
-      ],
-    });
+  const match = await user.verifyPassword(password);
+  if (!match) throw ServerError.getDefinedError("invalidData");
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw { type: "invalidData" };
+  const token = await signToken(
+    { id: user._id.toString() },
+    process.env.JWT_KEY,
+    {
+      expiresIn: process.env.JWT_AGE,
+    }
+  );
 
-    const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_KEY);
-    const hashedToken = await bcrypt.hash(token, 12);
-
-    await user.updateOne({
-      $set: {
-        token: hashedToken,
-        socket: socketId,
-      },
-    });
-
-    const responseObj = {
+  const responseObj = {
+    status: "success",
+    data: {
       _id: user._id.toString(),
-      name: user.name,
+      username: user.username,
       email: user.email,
       dp: user.dp,
-      chats: user.chats.map((chat) =>
-        chat.toObject({
-          flattenObjectIds: true,
-          flattenMaps: true,
-        })
-      ),
-    };
+      status: user.status,
+    },
+  };
 
-    res.setHeader("Authorize", `bearer ${token}`);
-    res.status(200).json(responseObj).end();
-  } catch (error) {
-    sendErrorResponse(error, next);
-  }
-};
+  res.cookie("authorization", `Bearer ${token}`, {
+    maxAge: process.env.JWT_COOKIE_AGE * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "prod",
+  });
+  res.status(200).json(responseObj);
+});
 
-const fetchUser = async (req, res, next) => {
-  try {
-    const { sender } = req;
+const requestReset = handleCatch(async (req, res) => {
+  const { username } = req.body;
 
-    await sender.populate({
-      path: "chats",
-      model: "Chat",
-      select: "_id type users latestMsg",
-      populate: [
-        {
-          path: "users",
-          select: "_id name email dp",
-          match: { _id: { $ne: sender._id } },
-        },
-      ],
-    });
+  const user = await User.findOne({ $or: [{ username }, { email: username }] });
+  const resetToken = randomBytes(32).toString("hex");
+  const hashedToken = createHash("sha256").update(resetToken).digest("hex");
+  user.token = hashedToken;
+  user.tokenExpire = Date.now();
+  await user.save();
+  await sendmail({
+    email: user.email,
+    key: "reset",
+    url: `http://localhost:4200/reset?${resetToken}`,
+  });
+  res.status(200).json({
+    status: "success",
+    message: "An email with reset link was sent to registered mail id",
+  });
+});
 
-    res
-      .status(200)
-      .json({
-        _id: sender._id.toString(),
-        name: sender.name,
-        email: sender.email,
-        dp: sender.dp,
-        chats: sender.chats,
-      })
-      .end();
-  } catch (error) {
-    sendErrorResponse(error, next);
-  }
-};
+const resetPassword = handleCatch(async (req, res) => {
+  const { password, token } = req.body;
 
-const requestReset = (req, res, next) => {};
+  const hashedToken = createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    token: hashedToken,
+    tokenExpire: { $gt: Date.now() },
+  }).select("_id username email dp");
+  if (!user) throw ServerError.getDefinedError("malformedToken");
 
-const reset = (req, res, next) => {};
+  user.password = password;
+  user.token = undefined;
+  user.tokenExpire = undefined;
+  await user.save();
 
-module.exports = { register, login, fetchUser, requestReset, reset };
+  const authToken = await signToken(
+    { id: user._id.toString() },
+    process.env.JWT_KEY,
+    { expiresIn: "1h" }
+  );
+
+  res.setHeader("authorization", `Bearer ${authToken}`);
+  res.status(200).json(user);
+});
+
+module.exports = { register, login, requestReset, resetPassword };

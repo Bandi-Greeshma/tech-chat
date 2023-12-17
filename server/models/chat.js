@@ -1,23 +1,38 @@
-const Mongoose = require("mongoose");
-const { Schema, model } = Mongoose;
+const mongoose = require("mongoose");
+const { Schema, model } = mongoose;
 
 const chatSchema = new Schema({
-  type: { type: String, required: true },
+  type: { type: String, required: true, enum: ["prrivate", "group"] },
   users: {
-    type: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-    default: [],
+    type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    required: true,
   },
-  messages: {
-    type: [{ type: Schema.Types.ObjectId, ref: "Message" }],
-    default: [],
+  buffers: {
+    type: [
+      {
+        user: mongoose.Schema.ObjectId,
+        start: Number,
+      },
+    ],
+    required: true,
   },
-  stats: Object,
   latestMsg: { type: String, default: "" },
 });
 
-chatSchema.methods.addMessage = function (message) {
-  this.messages = [...this.messages, message._id];
-  this.latestMsg = message.text;
+chatSchema.pre("save", function (next) {
+  if (this.isNew) {
+    this.buffers = this.users.map((user) => ({ user, start: 0 }));
+  }
+  next();
+});
+
+chatSchema.methods.updateBuffer = function (user, buffer) {
+  this.buffers = [
+    ...this.buffers.filter(
+      (buffer) => buffer.user.toString() === user._id.toString(),
+      { user: user._id, start: buffer }
+    ),
+  ];
   return this.save();
 };
 
