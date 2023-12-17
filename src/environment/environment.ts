@@ -6,10 +6,12 @@ export const environment = {
     auth: {
       register: '/api/v1/auth/register',
       login: '/api/v1/auth/login',
-      fetch: '/api/v1/auth/fetch',
     },
     chat: {
       add: '/api/v1/chat/add',
+    },
+    user: {
+      fetch: '/api/v1/user',
     },
   },
 };

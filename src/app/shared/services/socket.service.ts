@@ -13,7 +13,9 @@ export class SocketService {
   constructor() {}
 
   connectSocket() {
-    this.socket = io(`${environment.protocol}://${environment.host}`);
+    this.socket = io(`${environment.protocol}://${environment.host}`,{
+      auth:{},extraHeaders:{}
+    });
     this.socketId = this.socket.id;
     this.registerDefaultEvents();
   }
