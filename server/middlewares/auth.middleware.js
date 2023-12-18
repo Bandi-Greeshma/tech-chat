@@ -19,6 +19,7 @@ const protectSocket = handleCatchSocket(async (socket, next) => {
 });
 
 const verifyToken = async (bearer) => {
+  if (!bearer) throw ServerError.getDefinedError("missingToken");
   const token = bearer.split(" ")[1];
 
   const decoded = jwt.verify(token, process.env.JWT_KEY);

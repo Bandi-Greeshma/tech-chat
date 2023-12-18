@@ -9,6 +9,7 @@ const errorMap = {
   existingUser: { code: 400, message: "User already exist please login" },
   serverError: { code: 500, message: "Something went wrong" },
   missingSocket: { code: 400, message: "Socket info missing" },
+  missingToken: { code: 400, message: "Authorization is not present" },
   expiredToken: { code: 400, message: "Token has expired please login again" },
 };
 

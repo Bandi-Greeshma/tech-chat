@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../shared/services/auth.service';
-import { Register } from '../shared/models/register.model';
+import { AuthService } from '../../shared/services/auth.service';
+import { Register } from '../../shared/models/register.model';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'],
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
   constructor(private auth: AuthService) {}

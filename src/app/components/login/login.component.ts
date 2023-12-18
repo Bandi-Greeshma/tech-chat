@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../shared/services/auth.service';
-import { Login } from '../shared/models/auth.model';
+import { AuthService } from '../../shared/services/auth.service';
+import { Login } from '../../shared/models/auth.model';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   constructor(private authServ: AuthService) {}
