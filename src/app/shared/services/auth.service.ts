@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
 import { Login } from '../models/auth.model';
-import { environment } from 'src/environment/environment';
-import { catchError } from 'rxjs';
 import { Register } from '../models/register.model';
 import { Router } from '@angular/router';
 
@@ -12,10 +10,13 @@ import { Router } from '@angular/router';
 export class AuthService {
   constructor(private http: HttpService, private router: Router) {}
 
+  isloggedIn: boolean = false;
+
   login(payload: Login) {
     this.http.post('auth', 'login', payload).subscribe({
       next: (response) => {
         console.log(response);
+        this.isloggedIn = true;
         this.router.navigate(['']);
       },
       error: (err) => {

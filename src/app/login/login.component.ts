@@ -11,12 +11,12 @@ import { Login } from '../shared/models/auth.model';
 export class LoginComponent {
   constructor(private authServ: AuthService) {}
   loginForm = new FormGroup({
-    userName: new FormControl('', [Validators.required]),
+    username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
 
   onSubmit() {
-    // console.log(this.loginForm.value);
+    console.log(this.loginForm.value);
     if (this.loginForm.valid) {
       const value = this.loginForm.value;
       this.authServ.login(<Login>value);
