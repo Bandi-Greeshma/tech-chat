@@ -7,6 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent extends AppModule {
+export class AppComponent {
   title = 'whatsapp';
 }
