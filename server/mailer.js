@@ -1,18 +1,25 @@
 const nodemailer = require("nodemailer");
 
 const transport = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
   auth: {
-    user: "084810b3af3f1a",
-    pass: "32fe0f253f664e",
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
 });
 
 const mailtemplates = {
   reset: {
     subject: "Password Reset",
-    text: "Here is your password reset url.\n[url]",
+    html: `
+    Hi [username],
+
+    You can reset your password using the link below.
+    <a href="[url]">link</a>
+
+    Thanks & Regards
+    Tech-Chat Support`,
   },
 };
 
@@ -29,7 +36,7 @@ const sendmail = async ({ email, type, ...config }) => {
     to: email,
     from: "techchat@admin.com",
     subject: template.subject,
-    text: template.text,
+    html: template.text,
   });
 };
 

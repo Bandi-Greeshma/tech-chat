@@ -79,11 +79,12 @@ const requestReset = handleCatch(async (req, res) => {
   const hashedToken = createHash("sha256").update(resetToken).digest("hex");
   user.token = hashedToken;
   user.tokenExpire = Date.now();
-  await user.save();
+  await user.save({ validateModifiedOnly: true });
   await sendmail({
     email: user.email,
+    username: user.username,
     key: "reset",
-    url: `http://localhost:4200/reset?${resetToken}`,
+    url: `${req.get("Origin")}/reset?${resetToken}`,
   });
   res.status(200).json({
     status: "success",
