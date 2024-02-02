@@ -3,12 +3,19 @@ import { HttpService } from './http.service';
 import { Login, LoginResponse } from '../models/auth.model';
 import { Register } from '../models/auth.model';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { AppState } from '../models/state.model';
+import { loadUser } from '../../store/user/user.action';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpService, private router: Router) {}
+  constructor(
+    private http: HttpService,
+    private router: Router,
+    private store: Store<AppState>
+  ) {}
 
   isloggedIn: boolean = false;
 
