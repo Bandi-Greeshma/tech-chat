@@ -18,6 +18,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from './store';
 
 @NgModule({
   declarations: [
@@ -37,6 +39,7 @@ import { RegisterComponent } from './components/register/register.component';
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
+    StoreModule.forRoot(reducers),
   ],
   providers: [provideClientHydration(), provideHttpClient(withFetch())],
   bootstrap: [AppComponent],
