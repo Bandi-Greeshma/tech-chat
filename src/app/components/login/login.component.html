@@ -1,5 +1,5 @@
 
-<div>
+<!-- <div>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label>UserName</label>
@@ -13,4 +13,25 @@
 
       <button type="submit">Submit</button>
   </form>
+</div> -->
+
+<div class="w-[22%] p-5 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] min-h-[300px] bg-white shadow-lg">
+<div class="text-lg mb-2.5">
+  Login
+</div>
+<div>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="w-full relative">
+      <label for="username" class="absolute left-2.5 top-[4px]">UserName</label>
+      <input class="w-full text-[12px] border border-solid rounded-lg p-[5px] " type="text" id="username" formControlName="username">
+    </div>
+
+    <div class="form-control">
+      <label>Password</label>
+      <input type="password" formControlName="password" class="form-control">
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+</div>
 </div>

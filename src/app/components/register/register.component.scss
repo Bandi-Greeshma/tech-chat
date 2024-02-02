@@ -1,0 +1,75 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+}
+.labelTag {
+  display: block;
+}
+.mainContainer {
+  // background: url("../../../assets/images/wallpaper.jpg");
+  // background-repeat: no-repeat;
+  // background-size: cover;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%) ;
+  width: 400px;
+  padding: 10px;
+}
+.mainContainer h1 {
+  font-size: 30px;
+  text-align: center;
+  margin: 20px 0px;
+}
+.labelTag {
+  font-size: 20px;
+  margin: 5px 0;
+}
+.form-control{
+  font-size: 16px;
+  padding: 8px 8px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid gray;
+}
+.countryTag {
+  display: inline-block;
+}
+// .selectTag {
+//   font-size: 20px;
+//   margin: 5px 0;
+// }
+#country {
+  background-color: gray;
+}
+.radioTag {
+  margin-left: 3px;
+  vertical-align: middle;
+}
+.genderTag {
+  margin-right: 3px;
+  vertical-align: middle;
+}
+.submitButton {
+  font-size: 18px;
+  margin: 10px 0 0 0;
+  font-weight: bold;
+  padding: 10px 15px;
+  width: 50%;
+  //border: 1px solid blue;
+  background-color: rgb(5, 50, 5);
+  color: white;
+  border-radius: 8px;
+}
+.submitButton:hover,
+.submitButton:active{
+  background-color: transparent;
+    color: rgb(17, 84, 17);
+}
+.buttonConatiner {
+  text-align: center;
+}
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}

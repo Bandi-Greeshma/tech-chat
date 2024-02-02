@@ -13,9 +13,9 @@ export class HttpService {
     return `${environment.protocol}://${environment.host}${environment.api[service][path]}`;
   }
 
-  get(service: string, path: string) {
+  get<T extends object>(service: string, path: string) {
     const url = this.urlConstructor(service, path);
-    return this.http.get(url, { headers: {}, observe: 'response' }).pipe(
+    return this.http.get<T>(url, { headers: {}, observe: 'response' }).pipe(
       map((response) => {
         return response.body;
       }),
@@ -23,10 +23,14 @@ export class HttpService {
     );
   }
 
-  post(service: string, path: string, payload: any) {
+  post<T extends object, P extends object>(
+    service: string,
+    path: string,
+    payload: P
+  ) {
     const url = this.urlConstructor(service, path);
     return this.http
-      .post(url, payload, {
+      .post<T>(url, payload, {
         observe: 'response',
         headers: {},
       })

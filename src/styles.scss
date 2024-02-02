@@ -34,6 +34,8 @@ $tech-chat-theme: mat.define-light-theme((
 @include mat.all-component-themes($tech-chat-theme);
 
 /* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html, body { min-height: 100vh; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background-image: url("assets/images/wallpaper.jpg");background-repeat: no-repeat;background-size: cover; }

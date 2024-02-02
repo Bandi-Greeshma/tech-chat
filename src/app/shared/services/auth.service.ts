@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpService } from './http.service';
-import { Login } from '../models/auth.model';
-import { Register } from '../models/register.model';
+import { Login, LoginResponse } from '../models/auth.model';
+import { Register } from '../models/auth.model';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class AuthService {
   isloggedIn: boolean = false;
 
   login(payload: Login) {
-    this.http.post('auth', 'login', payload).subscribe({
+    this.http.post<LoginResponse, Login>('auth', 'login', payload).subscribe({
       next: (response) => {
         console.log(response);
         this.isloggedIn = true;
